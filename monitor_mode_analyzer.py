@@ -17,6 +17,7 @@ filename = sys.argv[1]
 timestep = float(sys.argv[2])
 
 # rdpcap comes from scapy and loads in our pcap or pcapng file
+print("Loading in capture file with rdpcap (may take a while with very large captures)...")
 packets = rdpcap(filename)
 
 start_time = packets[0].time
@@ -31,6 +32,7 @@ statistics = [dict(zip(objects, [0 for _ in objects]))
 
 mac_tracker = [set() for _ in statistics]
 
+print("Parsing packets...")
 for packet in packets:
     index = int((packet.time - start_time) // timestep)
     statistics[index]["packet_count"] += 1
@@ -58,6 +60,8 @@ for packet in packets:
                 statistics[index]["clear_to_send"] += 1
             if packet.subtype == 13:
                 statistics[index]["acks"] += 1
+
+print("Writing graphs...")
 
 for i, mac_counts in enumerate(statistics):
     mac_counts["unique_macs"] = len(mac_tracker[i])
