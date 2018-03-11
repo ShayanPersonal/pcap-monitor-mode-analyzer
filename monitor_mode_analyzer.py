@@ -74,9 +74,24 @@ subdir = "{}_{}".format(filename, t)
 os.mkdir("figures/" + subdir)
 
 for obj in objects:
+    # Non-cumulative
     plt.title(obj)
     plt.xlabel("time (seconds)")
     plt.ylabel(obj + " per second")
     plt.plot([i * timestep for i, _ in enumerate(statistics)], [y[obj] for y in statistics])
-    plt.savefig("figures/{}/{}.png".format(subdir, obj))
+    plt.savefig("figures/{}/{}_histogram.png".format(subdir, obj))
+    plt.clf()
+
+    # Cumulative
+    plt.title(obj)
+    plt.xlabel("time (cumulative seconds)")
+    plt.ylabel(obj + " per second cumulative")
+    histogram = [y[obj] for y in statistics]
+    cumulative = [None for _ in histogram]
+    s = 0
+    for i, x in enumerate(histogram):
+        s += x
+        cumulative[i] = s
+    plt.plot([i * timestep for i, _ in enumerate(statistics)], cumulative)
+    plt.savefig("figures/{}/{}_cumulative.png".format(subdir, obj))
     plt.clf()
